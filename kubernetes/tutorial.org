@@ -1,0 +1,406 @@
+#+SETUPFILE: ../org-html-themes/setup/theme-readtheorg.setup
+* Install minikube (on Windows)
+** Minikube installation
+   #+begin_src sh
+     # Install chocolatey as package manager on Windows
+     # Copy and paste the following string into your powershell(opened as admin)
+     Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+
+     # Install minikube
+     # (Currently I have to use 0.25.2 version to avoid 'start cluster components...' hang problem)
+     choco install minikube --version 0.25.2 -y
+     # It should automatically install the dependency which is kubernetes-cli
+     # if not, install
+     choco install kubernetes cli -y
+
+   #+end_src
+** Start minikube 
+*** Configure hyper-v as vm to be used with minikube
+    1) Enable hyperv on Windows10
+    2) Create external virtual switch on hyperv (name it like "minikube-switch", its name will be used later).
+*** Start minikube
+    1) cd into the drive you installed minikube
+       If you installed minikube in C:, then execute the following command in drive C:. Otherwise, it may cause strange problem.
+    2) check the start options with =minikube start --help=. I use the following command
+       #+begin_src sh
+	 minikube start --vm-driver "hyperv" --hyperv-virtual-switch "minikube-switch" --memory 4096
+       #+end_src
+* Prepare your docker image
+  Create hellonode folder, prepare your Dockerfile and related file for creating docker image in that folder.
+** Create and edit .js in hellonode folder
+   #+begin_src javascript
+     const http = require('http');
+     const os = require('os');
+     console.log("Kubia server starting...");
+     var handler = function(request, response) {
+	 console.log("Received request from " + request.connection.remoteAddress);
+	 response.writeHead(200);
+	 response.end("You've hit " + os.hostname() + "\n");
+     };
+     var www = http.createServer(handler);
+     www.listen(8080);
+   #+end_src
+** Create and edit Dockerfile
+   #+begin_src dockerfile
+	     FROM node:7
+	     ADD app.js /app.js
+	     ENTRYPOINT ["node", "app.js"]
+   #+end_src
+** Running the container image 
+   #+begin_src sh
+     # To build docker image
+     docker build -t zwpdbh/kubia .
+
+     # To check your images
+     docker images
+
+     # To run your image
+     docker run --name kubia-container -p 8080:8080 -d zwpdbh/kubia
+
+     # To push your image(You need to push it into registry so that the image could be downloaded by Docker daemon in minikube)
+     docker push zwpdbh/kubia:<tag>
+   #+end_src 
+   After running those, you should visit your [[http://localhost:8080/][http://localhost:8080/]] see something like "You have hit e0ad663b88fc".
+   
+** (Build and Run docker image in minikube)
+   To store images inside minikube(otherwise we need to push images onto Web, and let minikube's vm loadload those image during container creation), we will not use local machine's Docker registry. We will use the Docker registry of the Docker daemon running inside minikube's vm instance.
+   #+begin_src sh
+     # set to use minikube's docker daemon
+     minikube docker-env | Invoke-Expression
+
+     # build your docker image (and other stuff)
+     docker build -t hello-node:v1 .
+
+     # check that the image is in minikube's registry
+     minikube ssh docker images
+   #+end_src
+   # Later, when you no longer wish to use the Minikube host, you can undo this change by running
+   # #+begin_src sh
+   #   # for linux
+   #   eval $(minikube docker-env -u)
+
+   #   # for windows
+   #   minikube docker-env -u
+   # #+end_src
+* Running your first app on kubernetes
+  Instead of running docker container by yourself, you let kubernetes to create and manages containers. However, kubernetes does not operate directly on containers. It operate on pods which are the building blocks for kubernetes.
+** Deploying your Node.js app 
+   #+begin_src sh
+     # create a deployment that manages a pod (it will use ReplicationController, rc)
+     kubectl run hello-node --image=zwpdbh/kubia --port=8080 --generator=run/v1
+     # without rc, it will create a deployment pod
+     kubectl run hello-node --image=zwpdbh/kubia --port=8080
+     # To specify use local images and not download images 
+     kubectl run hello-node --image=hello-node:v1 --port=8080 --image-pull-policy=Never
+
+
+     # view the pod (you can't list individual containers, since they are not standalone kubernetes objects)
+     # It will take a while for container creation
+     kubectl get pods
+     # To get more details of a specific pod
+     kubectl describe pod <pod_name>
+
+     # check log of pod (could get from `kubectl get pods`)
+     kubectl logs <pod-name>
+
+     # view the deployment
+     kubectl get deployments
+
+     # view cluste events
+     kubectl get events
+
+     # view kubectl configuration
+     kubectl config view
+   #+end_src 
+* Create a Service object
+  Each pod created in the cluster gain a unique IP and could talk to each other, but it is by default private and could not be accessed from outside. So to be able to access you application, you need to create a service object.
+  #+begin_src sh
+    # Tell the rc to expose  the pod to the public
+    kubectl expose rc hello-node --type=LoadBalancer --name hello-world-http
+    # Tell the deployment controller to create a service
+    kubectl expose deployment hello-node --type=LoadBalancer --name hello-world-http
+
+    # View the service
+    kubectl get services
+
+    # Access your application (LoadBlancer type makes the Service accessible through the minikube service command)
+    minikube service hello-node
+  #+end_src
+** Things to notice if you are using minikube to check the services
+   1) If you are psing minikube, you don't get an external IP address. The external IP address remains in the pending state.
+      You have to use =--type=NodePort= option instead of --type=LoadBalancer.
+      #+begin_src sh
+	kubectl expose deployment hello-node --type=NodePort --name hello-world-http
+      #+end_src
+   2) enter these commands
+      #+begin_src sh
+	kubectl cluster-info
+	kubectl describe services <your_service_name>
+      #+end_src
+      Their output displays the IP address of your minikube node and the node port value for your services. Then enter this command to access your application.
+      #+begin_src sh
+	curl <minikube-node-ip-address>:<service-node-port>
+      #+end_src
+      For example:
+      #+begin_src sh
+	PS C:\Users\ntpriv> kubectl cluster-info
+	Kubernetes master is running at https://10.3.11.19:8443
+
+	PS C:\Users\ntpriv> kubectl describe services example-service
+	Name:                     example-service
+	Namespace:                default
+	Labels:                   run=load-balancer-example
+	Annotations:              <none>
+	Selector:                 run=load-balancer-example
+	Type:                     NodePort
+	IP:                       10.96.224.169
+	Port:                     <unset>  8080/TCP
+	TargetPort:               8080/TCP
+	NodePort:                 <unset>  31379/TCP
+	Endpoints:                172.17.0.5:8080,172.17.0.6:8080
+	Session Affinity:         None
+	External Traffic Policy:  Cluster
+	Events:                   <none>
+
+	PS C:\Users\ntpriv> curl 10.3.11.19:31379
+
+
+	StatusCode        : 200
+	StatusDescription : OK
+	Content           : {72, 101, 108, 108...}
+	RawContent        : HTTP/1.1 200 OK
+	Connection: keep-alive
+	Transfer-Encoding: chunked
+	Date: Wed, 17 Oct 2018 10:04:50 GMT
+
+	Hello Kubernetes!
+	Headers           : {[Connection, keep-alive], [Transfer-Encoding, chunked], [Date, Wed, 17 Oct 2018 10:04:50 GMT]}
+	RawContentLength  : 17
+      #+end_src
+** Update your App 
+   Before update, use the above command shows:
+   #+begin_src sh
+     PS D:\workdir\code\kubernetes_playground\hellonode> curl 10.3.11.19:32605
+
+
+     StatusCode        : 200
+     StatusDescription : OK
+     Content           : {72, 101, 108, 108...}
+     RawContent        : HTTP/1.1 200 OK
+     Connection: keep-alive
+     Transfer-Encoding: chunked
+     Date: Thu, 18 Oct 2018 03:25:38 GMT
+
+     Hello World!
+     Headers           : {[Connection, keep-alive], [Transfer-Encoding, chunked], [Date, Thu, 18 Oct 2018 03:25:38 GMT]}
+     RawContentLength  : 12
+   #+end_src
+
+   Edit your .js file
+   #+begin_src sh
+     response.end('Hello World! Again!');
+   #+end_src
+
+   Build a new version of your image
+   #+begin_src sh
+     docker build -t hello-node:v2 .
+   #+end_src
+
+   Update the image of your deployment
+   #+begin_src sh
+     # hello-node is the name you defined when "kubectl run hello-node ..."
+     kubectl set image deployment/hello-node hello-node=hello-node:v2
+   #+end_src
+
+   The kubenetes could live update the application!
+   #+begin_src sh
+     PS D:\workdir\code\kubernetes_playground\hellonode> kubectl set image deployment/hello-node hello-node=hello-node:v2
+     deployment.apps "hello-node" image updated
+     PS D:\workdir\code\kubernetes_playground\hellonode> curl 10.3.11.19:32605
+
+
+     StatusCode        : 200
+     StatusDescription : OK
+     Content           : {72, 101, 108, 108...}
+     RawContent        : HTTP/1.1 200 OK
+     Connection: keep-alive
+     Transfer-Encoding: chunked
+     Date: Thu, 18 Oct 2018 03:28:19 GMT
+
+     Hello World! Again!
+     Headers           : {[Connection, keep-alive], [Transfer-Encoding, chunked], [Date, Thu, 18 Oct 2018 03:28:19 GMT]}
+     RawContentLength  : 19
+   #+end_src 
+* Enable addons
+  To check the currently supported addons:
+  #+begin_src sh
+    minikube addons list
+  #+end_src
+
+  To enable some addon
+  #+begin_src sh
+    minikube addons enable <addon-name>
+
+    PS D:\download\my_emacs_configuration> minikube addons enable dashboard
+    dashboard was successfully enabled
+    PS D:\download\my_emacs_configuration> minikube addons enable heapster
+    heapster was successfully enabled
+  #+end_src
+  
+* Clean up
+** Clean up kubernetes resources
+   Delete service object
+   #+begin_src sh
+     kubectl delete service <service-name>
+   #+end_src
+
+   Delete pods, need to specify the controller type
+   #+begin_src sh
+     # If it is a ReplicationController
+     kubectl delete rc hello-node
+
+     # If it is deployment controller
+     kubectl delete deployment hello-node
+   #+end_src
+
+   Stop and delete minikube VM
+   #+begin_src sh
+     # Stop minikube
+     minikube stop 
+
+     # Delete minikube VM
+     minikube delete
+   #+end_src
+** Clean up docker
+    #+begin_src sh
+      #listing all running containers
+      docker ps -a
+
+      #getting additional information about a container 
+      docker inspect <container-name>
+
+      #running a shell inside an existing container 
+      docker exec -it kubia-container bash
+
+      #shot all container
+      docker stop $(docker ps | awk '{print $NF}' | grep -v 'NAMES')
+
+      #delte all containers
+      docker rm -v $(docker ps -aq)
+
+      #delete all docker images
+      docker rmi $(docker images -q)
+    #+end_src
+* Troubleshooting
+  (encountered problems)
+** About error shows need virtual box
+*** Problem description 
+    Something like you need virtual box...
+*** Solution
+    When run =minikube start=, specify =--vm-driver "hyperv"=.
+** About error about network adaptor is not visible
+*** Problem description
+    Error like network adaptor is not visible.
+*** Solution
+    Check if you created external virtual switch, and specify it with =--hyperv-virtual-switch "<switch-name>"= during start minikube.
+** About hang at "minikube start"
+*** Problem description
+    When I use the latest version of minikube, say 0.30.0, and run =minikube start=, it hangs at the stage:"start cluster components...".
+    When run =minikube logs -v 9=, the log shows something like:
+    #+begin_src sh
+      I1011 10:24:04.073426    2160 round_trippers.go:386] curl -k -v -XGET  -H "User-Agent: minikube.exe/v0.0.0 (windows/amd64) kubernetes/$Format" -H "Accept: application/json, */*" 'https://134.244.221.171:8443/api/v1/namespaces/kube-system/pods?labelSelector=k8s-app%3Dkube-proxy'
+							   I1011 10:24:05.073974    2160 round_trippers.go:405] GET https://134.244.221.171:8443/api/v1/namespaces/kube-system/pods?labelSelector=k8s-app%3Dkube-proxy  in 1002 milliseconds
+														I1011 10:24:05.073974    2160 round_trippers.go:411] Response Headers:
+																				     I1011 10:24:05.075960    2160 kubernetes.go:119] error getting Pods with label selector "k8s-app=kube-proxy" [Get https://134.244.221.171:8443/api/v1/namespaces/kube-system/pods?labelSelector=k8s-app%3Dkube-proxy: dial tcp 134.244.221.171:8443: connectex: No connection could be nmade because the target machine actively refused it.]
+    #+end_src
+*** solution 
+    (Currently, I am using version 0.25.2 to avoid this problem, but it may introduce new errors.)
+    Not found yet.
+    What does that error mean?
+    It means the tcp port 8443 on minikube's new created vm could not be opened.
+    you could login the created minikube vm using =minikube ssh=, then check the status, you will found that the tcp 8443 port is not in listen status.
+    
+** About Pod Remains in ContainerCreating status
+*** Problem description
+    The problem is the pod's status is stuck in "ContainerCreating".
+    #+begin_src sh
+      PS C:\windows\system32> kubectl get pods
+      NAME                                      READY     STATUS              RESTARTS   AGE
+      hello-node-7n5qv                          0/1       ContainerCreating   0          37m
+      hello-node-development-548b8c445d-j9h6r   0/1       ContainerCreating   0          17m
+    #+end_src
+    Check the details =kubectl describe pod <the stuck pod's name>= about this pod shows:
+    #+begin_src sh
+      Events:
+      Type     Reason                  Age                From               Message
+      ----     ------                  ----               ----               -------
+      Normal   Scheduled               32m                default-scheduler  Successfully assigned hello-node-cv26p to minikube
+      Normal   SuccessfulMountVolume   32m                kubelet, minikube  MountVolume.SetUp succeeded for volume "default-token-tnsgs"
+      Warning  FailedCreatePodSandBox  2m (x64 over 32m)  kubelet, minikube  Failed create pod sandbox.
+    #+end_src
+
+    Check the log of the pod
+    #+begin_src sh
+      # check the logs of the current container
+      kubectl logs ${POD_NAME} ${CONTAINER_NAME}
+
+      # if your container has previously crashed, you can access the previous container's crash log with
+      kubectl logs --previous ${POD_NAME} ${CONTAINER_NAME}
+
+      # Alternately, you can run commands inside that container with exec
+      kubectl exec ${POD_NAME} -c ${CONTAINER_NAME} -- ${CMD} ${ARG1} ${ARG2} ... ${ARGN}
+    #+end_src
+    Note: =-c ${CONTAINER_NAME}= is optional and can be ommitted if the pod contains a single container.
+
+    The log shows:
+    #+begin_src sh
+      google_containers/pause-amd64:3.0": Error response from daemon: Get https://gcr.io/v2/: net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)
+      Oct 17 01:54:41 minikube localkube[3349]: E1017 01:54:41.827656    3349 pod_workers.go:186] Error syncing pod c4c3188325a93a2d7fb1714e1abf1259 ("kube-addon-manager-minikube_kube-system(c4c3188325a93a2d7fb1714e1abf1259)"), skipping: failed to "CreatePodSandbox" for "kube-addon-manager-minikube_kube-system(c4c3188325a93a2d7fb1714e1abf1259)" with CreatePodSandboxError: "CreatePodSandbox for pod \"kube-addon-manager-minikube_kube-system(c4c3188325a93a2d7fb1714e1abf1259)\" failed: rpc error: code = Unknown desc = failed pulling image \"gcr.io/google_containers/pause-amd64:3.0\": Error response from daemon: Get https://gcr.io/v2/: net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)"
+    #+end_src
+
+*** Exlaination
+    Except your image, when the container is created, it also needs =gcr.io/google_containers/pause-amd64:3.0= as [[https://stackoverflow.com/questions/46630377/what-is-pod-infra-container-image-meant-for][as =--pod-infra-container=]].
+*** Solution one
+    Seems the only option for using =kubectl= is to get around GFW.
+    (Have not found yet)
+    
+    Some related links
+    1) [[https://github.com/kubernetes/kubernetes/issues/7090][Why pull from "gcr.io" registry when I create pod?]]
+
+*** Solution two
+    If you are using =kubelet=, Specify the pod-infra option
+    #+begin_src sh
+      kubelet --pod-infra-container-image="docker.io/kubernetes/pause"
+    #+end_src
+
+    Since, we are using minikube, we could specify extra-config as
+    #+begin_src sh
+      minikube start --vm-driver "hyperv" --hyperv-virtual-switch "minikube-switch" --memory 4096 --extra-config=kubelet.pod-infra-container-image=registry.aliyuncs.com/archon/pause-amd64:3.0
+    #+end_src
+    (But, currently it doesn't work)
+         
+    We could also build those common images from Dockerfile:
+    Create [[https://github.com/kubernetes/kubernetes/blob/master/build/pause/Dockerfile][Dockerfile]]
+    #+begin_src dockerfile
+	      # Copyright 2016 The Kubernetes Authors.
+	      #
+	      # Licensed under the Apache License, Version 2.0 (the "License");
+	      # you may not use this file except in compliance with the License.
+	      # You may obtain a copy of the License at
+	      #
+	      #     http://www.apache.org/licenses/LICENSE-2.0
+	      #
+	      # Unless required by applicable law or agreed to in writing, software
+	      # distributed under the License is distributed on an "AS IS" BASIS,
+	      # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	      # See the License for the specific language governing permissions and
+	      # limitations under the License.
+
+	      FROM scratch
+	      ARG ARCH
+	      ADD bin/pause-${ARCH} /pause
+	      ENTRYPOINT ["/pause"]
+    #+end_src
+    Build docker image and specify to use it when use kubelete
+
+

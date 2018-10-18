@@ -1,0 +1,215 @@
+% Created 2018-10-16 Tue 16:35
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\date{\today}
+\title{}
+\hypersetup{
+ pdfauthor={},
+ pdftitle={},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.1 (Org mode 9.1.9)}, 
+ pdflang={English}}
+\begin{document}
+
+\tableofcontents
+
+\section{Install minikube (on Windows)}
+\label{sec:org54f2c5a}
+\subsection{Minikube installation}
+\label{sec:orgabb6c25}
+\begin{verbatim}
+# Install chocolatey as package manager on Windows
+# Copy and paste the following string into your powershell(opened as admin)
+Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+
+# Install minikube
+# (Currently I have to use 0.25.2 version to avoid 'start cluster components...' hang problem)
+choco install minikube --version 0.25.2 -y
+# It should automatically install the dependency which is kubernetes-cli
+# if not, install
+choco install kubernetes cli -y
+
+\end{verbatim}
+\subsection{Start minikube}
+\label{sec:orga3ce7d9}
+\subsubsection{Configure hyper-v as vm to be used with minikube}
+\label{sec:orge07998f}
+\begin{enumerate}
+\item Enable hyperv on Windows10
+\item Create external virtual switch on hyperv (name it like "minikube-switch", its name will be used later).
+\end{enumerate}
+\subsubsection{Start minikube}
+\label{sec:org697eeaf}
+\begin{enumerate}
+\item cd into the drive you installed minikube
+If you installed minikube in C:, then execute the following command in drive C:. Otherwise, it may cause strange problem.
+\item check the start options with \texttt{minikube start -{}-help}. I use the following command
+\begin{verbatim}
+minikube start --vm-driver "hyperv" --hyperv-virtual-switch "minikube-switch" --memory 4096
+\end{verbatim}
+\end{enumerate}
+\section{Prepare your docker image}
+\label{sec:org03efc49}
+Create hellonode folder, prepare your Dockerfile and related file for creating docker image in that folder.
+\subsection{Create and edit .js in hellonode folder}
+\label{sec:org26f8599}
+\begin{verbatim}
+const http = require('http');
+const os = require('os');
+console.log("Kubia server starting...");
+var handler = function(request, response) {
+    console.log("Received request from " + request.connection.remoteAddress);
+    response.writeHead(200);
+    response.end("You've hit " + os.hostname() + "\n");
+};
+var www = http.createServer(handler);
+www.listen(8080);
+\end{verbatim}
+\subsection{Create and edit Dockerfile}
+\label{sec:org114364d}
+\begin{verbatim}
+FROM node:7
+ADD app.js /app.js
+ENTRYPOINT ["node", "app.js"]
+\end{verbatim}
+\subsection{Running the container image}
+\label{sec:org78a0b1d}
+\begin{verbatim}
+# To build docker image
+docker build -t zwpdbh/kubia .
+
+# To check your images
+docker images
+
+# To run your image
+docker run --name kubia-container -p 8080:8080 -d zwpdbh/kubia
+
+# To push your image(You need to push it into registry so that the image could be used by minikube)
+docker push zwpdbh/kubia:<tag>
+\end{verbatim}
+After running those, you should visit your \href{http://localhost:8080/}{http://localhost:8080/} see something like "You have hit e0ad663b88fc".
+
+\subsection{(Build and Run docker image in minikube)}
+\label{sec:org5785282}
+To store images inside minikube, we will not use local machine's Docker registry. We will use the Docker registry of the Docker daemon running inside minikube's vm instance.
+\begin{verbatim}
+# set to use minikube's docker daemon
+minikube docker-env | Invoke-Expression
+# build your docker image (and other stuff)
+Docker build -t hello-node:v1 .
+# check that the image is in minikube's registry
+minikube ssh docker images
+\end{verbatim}
+
+\section{Creat a Deployment(create pod)}
+\label{sec:org3ea133a}
+Kubernetes create and manages your application using pod which is the building block. It does not manages container directly. Instead, it manages based on pods. A pod could contain one or more containers.
+\begin{verbatim}
+# create a deployment that manages a pod
+kubectl run hello-node --image=hello-node:v1 --port=8080 --image-pull-policy=Never
+
+# view the deployment
+kubectl get deployments
+
+# view the pod
+kubectl get pods
+
+# view cluste events
+kubectl get events
+
+# view kubectl configuration
+kubectl config view
+\end{verbatim}
+
+\section{Create a Service object}
+\label{sec:org51e437d}
+Each pod created in the cluster gain a unique IP and could talk to each other, but it is by default private and could not be accessed from outside. So to be able to access you application, you need to create a service object.
+\begin{verbatim}
+# Tell the deployment controller to expose  the pod to the public
+kubectl expose deployment hello-node --type=LoadBalancer
+
+# View the service
+kubectl get services
+
+# Access your application (LoadBlancer type makes the Service accessible through the minikube service command)
+minikube service hello-node
+
+# check log of pod (could get from `kubectl get pods`)
+kubectl logs <pod-name>
+\end{verbatim}
+\section{Troubleshooting}
+\label{sec:org17ea597}
+(encountered problems)
+\subsection{useful commands}
+\label{sec:org956a312}
+\subsubsection{For docker}
+\label{sec:org8f82a77}
+\begin{verbatim}
+#listing all running containers
+docker ps -a
+
+#getting additional information about a container 
+docker inspect <container-name>
+
+#running a shell inside an existing container 
+docker exec -it kubia-container bash
+
+#shot all container
+docker stop $(docker ps | awk '{print $NF}' | grep -v 'NAMES')
+
+#delte all containers
+docker rm -v $(docker ps -aq)
+
+#delete all docker images
+docker rmi $(docker images -q)
+\end{verbatim}
+\subsection{About error shows need virtual box}
+\label{sec:org268ce44}
+\subsubsection{Problem description}
+\label{sec:org465ea2a}
+Something like you need virtual box\ldots{}
+\subsubsection{Solution}
+\label{sec:org4a17ae3}
+When run \texttt{minikube start}, specify \texttt{-{}-vm-driver "hyperv"}.
+\subsection{About error about network adaptor is not visible}
+\label{sec:org784d722}
+\subsubsection{Problem description}
+\label{sec:orgd9c1b69}
+Error like network adaptor is not visible.
+\subsubsection{Solution}
+\label{sec:orgefcef9e}
+Check if you created external virtual switch, and specify it with \texttt{-{}-hyperv-virtual-switch "<switch-name>"} during start minikube.
+\subsection{About hang at "minikube start"}
+\label{sec:org768e383}
+\subsubsection{Problem description}
+\label{sec:org6039c22}
+When I use the latest version of minikube, say 0.30.0, and run \texttt{minikube start}, it hangs at the stage:"start cluster components\ldots{}".
+When run \texttt{minikube logs -v 9}, the log shows something like:
+\begin{verbatim}
+I1011 10:24:04.073426    2160 round_trippers.go:386] curl -k -v -XGET  -H "User-Agent: minikube.exe/v0.0.0 (windows/amd64) kubernetes/$Format" -H "Accept: application/json, */*" 'https://134.244.221.171:8443/api/v1/namespaces/kube-system/pods?labelSelector=k8s-app%3Dkube-proxy'
+I1011 10:24:05.073974    2160 round_trippers.go:405] GET https://134.244.221.171:8443/api/v1/namespaces/kube-system/pods?labelSelector=k8s-app%3Dkube-proxy  in 1002 milliseconds
+I1011 10:24:05.073974    2160 round_trippers.go:411] Response Headers:
+I1011 10:24:05.075960    2160 kubernetes.go:119] error getting Pods with label selector "k8s-app=kube-proxy" [Get https://134.244.221.171:8443/api/v1/namespaces/kube-system/pods?labelSelector=k8s-app%3Dkube-proxy: dial tcp 134.244.221.171:8443: connectex: No connection could be nmade because the target machine actively refused it.]
+\end{verbatim}
+\subsubsection{solution}
+\label{sec:orgee7b92c}
+(Currently, I am using version 0.25.2 to avoid this problem, but it may introduce new errors.)
+Not found yet.
+What does that error mean?
+It means the tcp port 8443 on minikube's new created vm could not be opened.
+you could login the created minikube vm using \texttt{minikube ssh}, then check the status, you will found that the tcp 8443 port is not in listen status.
+\end{document}

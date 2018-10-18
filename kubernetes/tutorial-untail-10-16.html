@@ -1,0 +1,645 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2018-10-16 Tue 17:37 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>&lrm;</title>
+<meta name="generator" content="Org mode" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<link rel="stylesheet" type="text/css" href="https://www.pirilampo.org/styles/readtheorg/css/htmlize.css"/>
+<link rel="stylesheet" type="text/css" href="https://www.pirilampo.org/styles/readtheorg/css/readtheorg.css"/>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="https://www.pirilampo.org/styles/lib/js/jquery.stickytableheaders.min.js"></script>
+<script type="text/javascript" src="https://www.pirilampo.org/styles/readtheorg/js/readtheorg.js"></script>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2018 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="content">
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org9d85dde">1. Install minikube (on Windows)</a>
+<ul>
+<li><a href="#org73b7f42">1.1. Minikube installation</a></li>
+<li><a href="#org780753f">1.2. Start minikube</a>
+<ul>
+<li><a href="#org625e5d6">1.2.1. Configure hyper-v as vm to be used with minikube</a></li>
+<li><a href="#orgd968757">1.2.2. Start minikube</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org0c1725d">2. Prepare your docker image</a>
+<ul>
+<li><a href="#org780afb5">2.1. Create and edit .js in hellonode folder</a></li>
+<li><a href="#orgd3767c5">2.2. Create and edit Dockerfile</a></li>
+<li><a href="#org161ab3f">2.3. Running the container image</a></li>
+<li><a href="#orgdb59fab">2.4. (Build and Run docker image in minikube)</a></li>
+</ul>
+</li>
+<li><a href="#org099b59a">3. Running your first app on kubernetes</a>
+<ul>
+<li><a href="#org69754e7">3.1. Deploying your Node.js app</a></li>
+</ul>
+</li>
+<li><a href="#orgf6f16f2">4. Create a Service object</a></li>
+<li><a href="#org6f8a89f">5. Troubleshooting</a>
+<ul>
+<li><a href="#org117b821">5.1. useful commands</a>
+<ul>
+<li><a href="#org9e01ff9">5.1.1. For docker</a></li>
+</ul>
+</li>
+<li><a href="#orgdc82f30">5.2. About error shows need virtual box</a>
+<ul>
+<li><a href="#org98b3a20">5.2.1. Problem description</a></li>
+<li><a href="#org6052796">5.2.2. Solution</a></li>
+</ul>
+</li>
+<li><a href="#org4c9820b">5.3. About error about network adaptor is not visible</a>
+<ul>
+<li><a href="#orgf8f5cdf">5.3.1. Problem description</a></li>
+<li><a href="#orgc8ec671">5.3.2. Solution</a></li>
+</ul>
+</li>
+<li><a href="#org5991647">5.4. About hang at "minikube start"</a>
+<ul>
+<li><a href="#orged6a27e">5.4.1. Problem description</a></li>
+<li><a href="#orge4b2328">5.4.2. solution</a></li>
+</ul>
+</li>
+<li><a href="#orga94aa44">5.5. About Pod Remains in ContainerCreating status</a>
+<ul>
+<li><a href="#orga26af49">5.5.1. Solution</a></li>
+<li><a href="#org124b9fd">5.5.2. Note01</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org9d85dde" class="outline-2">
+<h2 id="org9d85dde"><span class="section-number-2">1</span> Install minikube (on Windows)</h2>
+<div class="outline-text-2" id="text-1">
+</div>
+<div id="outline-container-org73b7f42" class="outline-3">
+<h3 id="org73b7f42"><span class="section-number-3">1.1</span> Minikube installation</h3>
+<div class="outline-text-3" id="text-1-1">
+<div class="org-src-container">
+<pre class="src src-sh"><span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">Install chocolatey as package manager on Windows</span>
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">Copy and paste the following string into your powershell(opened as admin)</span>
+Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString(<span style="color: #2d9574;">'https://chocolatey.org/install.ps1'</span>))
+
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">Install minikube</span>
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">(Currently I have to use 0.25.2 version to avoid 'start cluster components...' hang problem)</span>
+choco install minikube --version 0.25.2 -y
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">It should automatically install the dependency which is kubernetes-cli</span>
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">if not, install</span>
+choco install kubernetes cli -y
+
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org780753f" class="outline-3">
+<h3 id="org780753f"><span class="section-number-3">1.2</span> Start minikube</h3>
+<div class="outline-text-3" id="text-1-2">
+</div>
+<div id="outline-container-org625e5d6" class="outline-4">
+<h4 id="org625e5d6"><span class="section-number-4">1.2.1</span> Configure hyper-v as vm to be used with minikube</h4>
+<div class="outline-text-4" id="text-1-2-1">
+<ol class="org-ol">
+<li>Enable hyperv on Windows10</li>
+<li>Create external virtual switch on hyperv (name it like "minikube-switch", its name will be used later).</li>
+</ol>
+</div>
+</div>
+<div id="outline-container-orgd968757" class="outline-4">
+<h4 id="orgd968757"><span class="section-number-4">1.2.2</span> Start minikube</h4>
+<div class="outline-text-4" id="text-1-2-2">
+<ol class="org-ol">
+<li>cd into the drive you installed minikube
+If you installed minikube in C:, then execute the following command in drive C:. Otherwise, it may cause strange problem.</li>
+<li><p>
+check the start options with <code>minikube start --help</code>. I use the following command
+</p>
+<div class="org-src-container">
+<pre class="src src-sh">minikube start --vm-driver <span style="color: #2d9574;">"hyperv"</span> --hyperv-virtual-switch <span style="color: #2d9574;">"minikube-switch"</span> --memory 4096
+</pre>
+</div></li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org0c1725d" class="outline-2">
+<h2 id="org0c1725d"><span class="section-number-2">2</span> Prepare your docker image</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+Create hellonode folder, prepare your Dockerfile and related file for creating docker image in that folder.
+</p>
+</div>
+<div id="outline-container-org780afb5" class="outline-3">
+<h3 id="org780afb5"><span class="section-number-3">2.1</span> Create and edit .js in hellonode folder</h3>
+<div class="outline-text-3" id="text-2-1">
+<div class="org-src-container">
+<pre class="src src-javascript"><span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #7590db;">http</span> = require(<span style="color: #2d9574;">'http'</span>);
+<span style="color: #4f97d7; font-weight: bold;">const</span> <span style="color: #7590db;">os</span> = require(<span style="color: #2d9574;">'os'</span>);
+console.log(<span style="color: #2d9574;">"Kubia server starting..."</span>);
+<span style="color: #4f97d7; font-weight: bold;">var</span> <span style="color: #7590db;">handler</span> = <span style="color: #4f97d7; font-weight: bold;">function</span>(<span style="color: #7590db;">request</span>, <span style="color: #7590db;">response</span>) {
+    console.log(<span style="color: #2d9574;">"Received request from "</span> + request.connection.remoteAddress);
+    response.writeHead(200);
+    response.end(<span style="color: #2d9574;">"You've hit "</span> + os.hostname() + <span style="color: #2d9574;">"\n"</span>);
+};
+<span style="color: #4f97d7; font-weight: bold;">var</span> <span style="color: #7590db;">www</span> = http.createServer(handler);
+www.listen(8080);
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orgd3767c5" class="outline-3">
+<h3 id="orgd3767c5"><span class="section-number-3">2.2</span> Create and edit Dockerfile</h3>
+<div class="outline-text-3" id="text-2-2">
+<div class="org-src-container">
+<pre class="src src-dockerfile"><span style="color: #4f97d7; font-weight: bold;">FROM</span> <span style="color: #ce537a; font-weight: bold;">node:7</span>
+<span style="color: #4f97d7; font-weight: bold;">ADD</span> app.js /app.js
+<span style="color: #4f97d7; font-weight: bold;">ENTRYPOINT</span> [<span style="color: #2d9574;">"node"</span>, <span style="color: #2d9574;">"app.js"</span>]
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org161ab3f" class="outline-3">
+<h3 id="org161ab3f"><span class="section-number-3">2.3</span> Running the container image</h3>
+<div class="outline-text-3" id="text-2-3">
+<div class="org-src-container">
+<pre class="src src-sh"><span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">To build docker image</span>
+docker build -t zwpdbh/kubia .
+
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">To check your images</span>
+docker images
+
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">To run your image</span>
+docker run --name kubia-container -p 8080:8080 -d zwpdbh/kubia
+
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">To push your image(You need to push it into registry so that the image could be used by minikube)</span>
+docker push zwpdbh/kubia:&lt;tag&gt;
+</pre>
+</div>
+<p>
+After running those, you should visit your <a href="http://localhost:8080/">http://localhost:8080/</a> see something like "You have hit e0ad663b88fc".
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgdb59fab" class="outline-3">
+<h3 id="orgdb59fab"><span class="section-number-3">2.4</span> (Build and Run docker image in minikube)</h3>
+<div class="outline-text-3" id="text-2-4">
+<p>
+To store images inside minikube, we will not use local machine's Docker registry. We will use the Docker registry of the Docker daemon running inside minikube's vm instance.
+</p>
+<div class="org-src-container">
+<pre class="src src-sh"><span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">set to use minikube's docker daemon</span>
+minikube docker-env | Invoke-Expression
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">build your docker image (and other stuff)</span>
+Docker build -t hello-node:v1 .
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">check that the image is in minikube's registry</span>
+minikube ssh docker images
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org099b59a" class="outline-2">
+<h2 id="org099b59a"><span class="section-number-2">3</span> Running your first app on kubernetes</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+Instead of running docker container by yourself, you let kubernetes to create and manages containers. However, kubernetes does not operate directly on containers. It operate on pods which are the building blocks for kubernetes.
+</p>
+</div>
+<div id="outline-container-org69754e7" class="outline-3">
+<h3 id="org69754e7"><span class="section-number-3">3.1</span> Deploying your Node.js app</h3>
+<div class="outline-text-3" id="text-3-1">
+<div class="org-src-container">
+<pre class="src src-sh"><span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">create a deployment that manages a pod (it will use ReplicationController, rc)</span>
+kubectl run hello-node --image=zwpdbh/kubia --port=8080 --generator=run/v1
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">without rc, it will create a deployment pod</span>
+kubectl run hello-node-development --image=zwpdbh/kubia --port=8080
+
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">view the pod (you can't list individual containers, since they are not standalone kubernetes objects)</span>
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">It will take a while for container creation</span>
+kubectl get pods
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">To get more details of a specific pod</span>
+kubectl describe pod &lt;pod_name&gt;
+
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">check log of pod (could get from `kubectl get pods`)</span>
+kubectl logs &lt;pod-name&gt;
+
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">view the deployment</span>
+kubectl get deployments
+
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">view cluste events</span>
+kubectl get events
+
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">view kubectl configuration</span>
+kubectl config view
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgf6f16f2" class="outline-2">
+<h2 id="orgf6f16f2"><span class="section-number-2">4</span> Create a Service object</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+Each pod created in the cluster gain a unique IP and could talk to each other, but it is by default private and could not be accessed from outside. So to be able to access you application, you need to create a service object.
+</p>
+<div class="org-src-container">
+<pre class="src src-sh"><span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">Tell the deployment controller to expose  the pod to the public</span>
+kubectl expose rc hello-node --type=LoadBalancer --name kubia-http
+
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">View the service</span>
+kubectl get services
+
+<span style="color: #2aa1ae; background-color: #292e34;"># </span><span style="color: #2aa1ae; background-color: #292e34;">Access your application (LoadBlancer type makes the Service accessible through the minikube service command)</span>
+minikube service hello-node
+
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org6f8a89f" class="outline-2">
+<h2 id="org6f8a89f"><span class="section-number-2">5</span> Troubleshooting</h2>
+<div class="outline-text-2" id="text-5">
+<p>
+(encountered problems)
+</p>
+</div>
+<div id="outline-container-org117b821" class="outline-3">
+<h3 id="org117b821"><span class="section-number-3">5.1</span> useful commands</h3>
+<div class="outline-text-3" id="text-5-1">
+</div>
+<div id="outline-container-org9e01ff9" class="outline-4">
+<h4 id="org9e01ff9"><span class="section-number-4">5.1.1</span> For docker</h4>
+<div class="outline-text-4" id="text-5-1-1">
+<div class="org-src-container">
+<pre class="src src-sh"><span style="color: #2aa1ae; background-color: #292e34;">#</span><span style="color: #2aa1ae; background-color: #292e34;">listing all running containers</span>
+docker ps -a
+
+<span style="color: #2aa1ae; background-color: #292e34;">#</span><span style="color: #2aa1ae; background-color: #292e34;">getting additional information about a container </span>
+docker inspect &lt;container-name&gt;
+
+<span style="color: #2aa1ae; background-color: #292e34;">#</span><span style="color: #2aa1ae; background-color: #292e34;">running a shell inside an existing container </span>
+docker exec -it kubia-container bash
+
+<span style="color: #2aa1ae; background-color: #292e34;">#</span><span style="color: #2aa1ae; background-color: #292e34;">shot all container</span>
+docker stop $(docker ps | awk <span style="color: #2d9574;">'{print $NF}'</span> | grep -v <span style="color: #2d9574;">'NAMES'</span>)
+
+<span style="color: #2aa1ae; background-color: #292e34;">#</span><span style="color: #2aa1ae; background-color: #292e34;">delte all containers</span>
+docker rm -v $(docker ps -aq)
+
+<span style="color: #2aa1ae; background-color: #292e34;">#</span><span style="color: #2aa1ae; background-color: #292e34;">delete all docker images</span>
+docker rmi $(docker images -q)
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgdc82f30" class="outline-3">
+<h3 id="orgdc82f30"><span class="section-number-3">5.2</span> About error shows need virtual box</h3>
+<div class="outline-text-3" id="text-5-2">
+</div>
+<div id="outline-container-org98b3a20" class="outline-4">
+<h4 id="org98b3a20"><span class="section-number-4">5.2.1</span> Problem description</h4>
+<div class="outline-text-4" id="text-5-2-1">
+<p>
+Something like you need virtual box&#x2026;
+</p>
+</div>
+</div>
+<div id="outline-container-org6052796" class="outline-4">
+<h4 id="org6052796"><span class="section-number-4">5.2.2</span> Solution</h4>
+<div class="outline-text-4" id="text-5-2-2">
+<p>
+When run <code>minikube start</code>, specify <code>--vm-driver "hyperv"</code>.
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org4c9820b" class="outline-3">
+<h3 id="org4c9820b"><span class="section-number-3">5.3</span> About error about network adaptor is not visible</h3>
+<div class="outline-text-3" id="text-5-3">
+</div>
+<div id="outline-container-orgf8f5cdf" class="outline-4">
+<h4 id="orgf8f5cdf"><span class="section-number-4">5.3.1</span> Problem description</h4>
+<div class="outline-text-4" id="text-5-3-1">
+<p>
+Error like network adaptor is not visible.
+</p>
+</div>
+</div>
+<div id="outline-container-orgc8ec671" class="outline-4">
+<h4 id="orgc8ec671"><span class="section-number-4">5.3.2</span> Solution</h4>
+<div class="outline-text-4" id="text-5-3-2">
+<p>
+Check if you created external virtual switch, and specify it with <code>--hyperv-virtual-switch "&lt;switch-name&gt;"</code> during start minikube.
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org5991647" class="outline-3">
+<h3 id="org5991647"><span class="section-number-3">5.4</span> About hang at "minikube start"</h3>
+<div class="outline-text-3" id="text-5-4">
+</div>
+<div id="outline-container-orged6a27e" class="outline-4">
+<h4 id="orged6a27e"><span class="section-number-4">5.4.1</span> Problem description</h4>
+<div class="outline-text-4" id="text-5-4-1">
+<p>
+When I use the latest version of minikube, say 0.30.0, and run <code>minikube start</code>, it hangs at the stage:"start cluster components&#x2026;".
+When run <code>minikube logs -v 9</code>, the log shows something like:
+</p>
+<div class="org-src-container">
+<pre class="src src-sh">I1011 10:24:04.073426    2160 round_trippers.go:386] curl -k -v -XGET  -H <span style="color: #2d9574;">"User-Agent: minikube.exe/v0.0.0 (windows/amd64) kubernetes/$Format"</span> -H <span style="color: #2d9574;">"Accept: application/json, */*"</span> <span style="color: #2d9574;">'https://134.244.221.171:8443/api/v1/namespaces/kube-system/pods?labelSelector=k8s-app%3Dkube-proxy'</span>
+I1011 10:24:05.073974    2160 round_trippers.go:405] GET https://134.244.221.171:8443/api/v1/namespaces/kube-system/pods?<span style="color: #7590db;">labelSelector</span>=k8s-app%3Dkube-proxy <span style="color: #4f97d7; font-weight: bold;"> in</span> 1002 milliseconds
+I1011 10:24:05.073974    2160 round_trippers.go:411] Response Headers:
+I1011 10:24:05.075960    2160 kubernetes.go:119] error getting Pods with label selector <span style="color: #2d9574;">"k8s-app=kube-proxy"</span> [Get https://134.244.221.171:8443/api/v1/namespaces/kube-system/pods?<span style="color: #7590db;">labelSelector</span>=k8s-app%3Dkube-proxy: dial tcp 134.244.221.171:8443: connectex: No connection could be nmade because the target machine actively refused it.]
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-orge4b2328" class="outline-4">
+<h4 id="orge4b2328"><span class="section-number-4">5.4.2</span> solution</h4>
+<div class="outline-text-4" id="text-5-4-2">
+<p>
+(Currently, I am using version 0.25.2 to avoid this problem, but it may introduce new errors.)
+Not found yet.
+What does that error mean?
+It means the tcp port 8443 on minikube's new created vm could not be opened.
+you could login the created minikube vm using <code>minikube ssh</code>, then check the status, you will found that the tcp 8443 port is not in listen status.
+</p>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-orga94aa44" class="outline-3">
+<h3 id="orga94aa44"><span class="section-number-3">5.5</span> About Pod Remains in ContainerCreating status</h3>
+<div class="outline-text-3" id="text-5-5">
+<p>
+The problem is the pod's status is stuck in "ContainerCreating".
+</p>
+<div class="org-src-container">
+<pre class="src src-sh">PS C:\windows\system32&gt; kubectl get pods
+NAME                                      READY     STATUS              RESTARTS   AGE
+hello-node-7n5qv                          0/1       ContainerCreating   0          37m
+hello-node-development-548b8c445d-j9h6r   0/1       ContainerCreating   0          17m
+</pre>
+</div>
+</div>
+<div id="outline-container-orga26af49" class="outline-4">
+<h4 id="orga26af49"><span class="section-number-4">5.5.1</span> Solution</h4>
+<div class="outline-text-4" id="text-5-5-1">
+<p>
+(Have not found yet)
+</p>
+</div>
+</div>
+<div id="outline-container-org124b9fd" class="outline-4">
+<h4 id="org124b9fd"><span class="section-number-4">5.5.2</span> <a href="https://stackoverflow.com/questions/48190928/kubernetes-pod-remains-in-containercreating-status">Note01</a></h4>
+<div class="outline-text-4" id="text-5-5-2">
+<ul class="org-ul">
+<li>doing a full reboot of both VMs that are running kubernetes master node and work nodes.</li>
+<li>try <code>systemctl restart kubelet.service</code></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="date">Created: 2018-10-16 Tue 17:37</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>
